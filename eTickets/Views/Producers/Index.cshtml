@@ -30,13 +30,18 @@
                             <td>
                                 @Html.DisplayFor(modelitem => item.FullName)
                             </td>
+
                             <td>
                                 @Html.DisplayFor(modelitem => item.Bio)
                             </td>
+
                             <td>
-                                <a class="btn btn-outline-primary me-2" href="#"><i class="bi bi-pencil-square"></i> Edit</a>
-                                <a class="btn btn-outline-info me-2" href="#"><i class="bi bi-eye"></i> Details</a>
-                                <a class="btn btn-danger" href="#"><i class="bi bi-trash"></i> Delete</a>
+                                <div class="d-inline-flex">
+                                    <a class="btn btn-outline-primary me-2" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i> Edit</a>
+                                    <a class="btn btn-outline-info me-2" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i> Details</a>
+                                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash"></i> Delete</a>
+                                </div>
+
                             </td>
                         </tr>
                     }
@@ -44,4 +49,7 @@
             </table>
         </div>
     </div>
+</div>
+<div class="text-white" style="position:fixed; right:25px; bottom:25px">
+    <a asp-controller="Producers" asp-action="Create" class="btn btn-success"><i class="bi bi-plus-circle"></i>Add New</a>
 </div>

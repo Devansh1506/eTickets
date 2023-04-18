@@ -56,5 +56,57 @@ namespace eTickets.Controllers
             await _service.AddMovieAsync(movie);
             return RedirectToAction("Index");
         }
+
+        //GET: Movies/Edit/1
+        public async Task<IActionResult> Edit(int id)
+        {
+            var movieDetail = await _service.GetMovieByIdAsync(id);
+            if(movieDetail == null) return View("NotFound");
+
+            var response = new NewMovieVM()
+            {
+                Id = movieDetail.Id,
+                Name = movieDetail.Name,
+                Description = movieDetail.Description,
+                Price = movieDetail.Price,
+                ImageURL = movieDetail.ImageURL,
+                MovieCategory = movieDetail.MovieCategory,
+                CinemaId = movieDetail.CinemaId,
+                ProducerId = movieDetail.ProducerId,
+                StartDate= movieDetail.StartDate,
+                EndDate= movieDetail.EndDate,
+                ActorIds = movieDetail.Actor_Movies.Select(n => n.ActorId).ToList(),
+            };
+
+            var moievDropdownsData = await _service.GetMovieDropdownsValues();
+
+            ViewBag.Actors = new SelectList(moievDropdownsData.Actors, "Id", "FullName");
+            ViewBag.Producers = new SelectList(moievDropdownsData.Producers, "Id", "FullName");
+            ViewBag.Cinemas = new SelectList(moievDropdownsData.Cinemas, "Id", "Name");
+
+            return View(response);
+        }
+
+        //POST : Movie/Edit
+        [HttpPost]
+
+        public async Task<IActionResult> Edit(int id, NewMovieVM movie)
+        {
+            if (id != movie.Id) return View("NotFound");
+
+
+            if (!ModelState.IsValid)
+            {
+                var moievDropdownsData = await _service.GetMovieDropdownsValues();
+                ViewBag.Actors = new SelectList(moievDropdownsData.Actors, "Id", "FullName");
+                ViewBag.Producers = new SelectList(moievDropdownsData.Producers, "Id", "FullName");
+                ViewBag.Cinemas = new SelectList(moievDropdownsData.Cinemas, "Id", "Name");
+
+                return View(movie);
+            }
+
+            await _service.UpdateMovieAsync(movie);
+            return RedirectToAction("Index");
+        }
     }
 }

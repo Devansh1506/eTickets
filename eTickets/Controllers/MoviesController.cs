@@ -4,6 +4,7 @@ using eTickets.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace eTickets.Controllers
 {
@@ -19,7 +20,39 @@ namespace eTickets.Controllers
             var allmovies = await _service.GetAllAsync(o => o.Cinema);
             return View(allmovies);
         }
+        //----------------------------------------------------------------------------------------------------------
+        [HttpGet]
+        public async Task<IActionResult> FilteredMovies(string searchString)
+        {
+            var allmovies = await _service.GetAllAsync(o => o.Cinema);
 
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                var filteredResult = allmovies.Where(n => n.Name.ToLower().Contains(searchString.ToLower()) 
+                                                       || n.Description.ToLower().Contains(searchString.ToLower()))
+                                                         .ToList();
+                if (filteredResult.IsNullOrEmpty())
+                {
+                    return View("NotFound");
+                }
+
+                return View("Index",filteredResult);
+            };
+
+            return View("Index",allmovies);
+        }
+        /// <summary>
+        /// here i am using "PRG (Post Redirect Get)" method for preventing refreshe or reload after submit form   
+        /// </summary>
+        /// <param name="searchString"> Passing data to Get Moethd</param>
+        /// <returns></returns>
+
+        [HttpPost]
+        public IActionResult Filter(string searchString)
+        {
+            return RedirectToAction("FilteredMovies", new { searchString });
+        }
+        //------------------------------------------------------------------------------------------------------------
         //GET: Movie/Details/1
         public async Task<IActionResult> Details(int id)
         {
